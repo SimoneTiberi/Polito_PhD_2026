@@ -24,7 +24,7 @@ input_data
 input_data = filter_genes(input_data, min_counts_per_gene = 20)
 
 # input, not a count matrix, but equivalence classes and their counts
-# this gene has 3 ECs and 2 transcripts:
+# this gene has 3 ECs (columns) and 2 transcripts (rows):
 input_data@classes[[3]]
 # columns = EC, rows = transcripts (1 if a transcript is present in the EC)
 # 1st EC has both trasncripts, 2nd EC only ENST00000378891, 3rd EC only ENST00000378888
@@ -129,7 +129,7 @@ length(unique(gene_id))
 # 12 k genes
 rm(sel_genes)
 
-# keep transcripts with >= 20 counts per condition (across all samples):
+# keep Genes with >= 20 counts per condition (across all samples):
 # we aim to estimate proportions in each condition
 Tr_counts = as.data.frame(Tr_counts)
 counts_split = split(Tr_counts, gene_id)
@@ -178,7 +178,7 @@ dxd = DEXSeqDataSet(countData = round( Tr_counts ),
 
 # parallel coding - use 4 cores:
 library(BiocParallel)
-BPPARAM = MulticoreParam(workers=4)
+BPPARAM = MulticoreParam(workers=8)
 
 # estimate normalization constants:
 dxd = estimateSizeFactors(dxd)
@@ -239,6 +239,9 @@ dotplot(EGO_DEXSeq, showCategory=10, x = "p.adjust")
 
 save(res_DEXSeq, EGO_DEXSeq, file = "output/DEXSeq.RData")
 
+# GSEA usually rank by -log(p) * sign(FC)
+# but FC not defined in DAS.
+
 #############################################
 # DGE and DAS overlap 
 #############################################
@@ -258,6 +261,7 @@ head(DF)
 # check if edgeR and DEXSeq results are associated:
 plot(DF$FDR_edgeR, DF$FDR_DEXSeq)
 cor(DF$FDR_edgeR, DF$FDR_DEXSeq)
+# -0.08503758
 
 # check if significant results are similar:
 # we need to dicotomize FDR (> vs. < 0.01):

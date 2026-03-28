@@ -2,7 +2,7 @@
 # load the data:
 #############################################
 # here, we use a filtered dataset.
-rm(list =ls())
+rm(list = ls())
 load("data/gene_counts.RData")
 ls()
 dim(Gene_counts)
