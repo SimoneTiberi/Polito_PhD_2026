@@ -26,9 +26,13 @@ dim(sce)
 # calculate per-cell quality control (QC) metrics
 library(scater)
 qc = perCellQCMetrics(sce)
+# sum: cell library size
+# detected: number of non-zero cells
 
 # remove cells with few or many detected genes
 ol = isOutlier(metric = qc$detected)
+# it defines outliers the cells with metric
+# more than 3 median absolute deviations away from the median
 mean(ol)
 # 6% of the cells removed
 sce = sce[, !ol]
@@ -46,7 +50,7 @@ sce
 #############################################
 # Cell type identification:
 #############################################
-# reference
+# reference for human data:
 library(celldex)
 reference = celldex::HumanPrimaryCellAtlasData()
 
@@ -144,7 +148,7 @@ pb = aggregateData(sce,
 # dim: 5558 16
 # 5.5 k genes * 16 samples
 pb
-# each cell type willl be analyzed separately: we will perform DGE between conditions
+# each cell type will be analyzed separately: we will perform DGE between conditions
 
 pbMDS(pb)
 
@@ -167,7 +171,7 @@ pbHeatmap(sce, res, g = "ISG20")
 
 # check concordance of top genes across cell type results:
 
-# filter FDR < 5%, abs(logFC) > 2 & sort by adj. p-value
+# filter FDR < 1%, abs(logFC) > 2 & sort by adj. p-value
 tbl_fil = lapply(tbl, function(u) {
   u = dplyr::filter(u, p_adj.loc < 0.01, abs(logFC) > 2)
   dplyr::arrange(u, p_adj.loc)
@@ -195,8 +199,6 @@ design = model.matrix(~group)
 # rownames of the design must indicate sample ids:
 rownames(design) = samples
 design
-
-cpm(sce) = calculateCPM(sce)
 
 # for computational reasons, select 100 genes to analyze:
 cpm(sce) = calculateCPM(sce)
@@ -255,7 +257,7 @@ plot_cdfs(x = sce,
 
 # make violin plots:
 library(scater)
-plotExpression(sce[,sce$ "B cells"],
+plotExpression(sce[, which(sce$cluster_id == "B cells")],
                features = "PLSCR1", 
                exprs_values = "logcounts",
                log2_values = FALSE,
@@ -280,8 +282,10 @@ dd
 # normalize by library size: total number of cells in a sample
 dd = calcNormFactors(dd)
 
+# norm.factors -> edgeR
+
 # define the model design
-design = model.matrix(~ dd$samples$group)
+design = model.matrix(~ group)
 design
 
 # filter rare abundant cell types
