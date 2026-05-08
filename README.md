@@ -1,5 +1,7 @@
 Material for PhD course "Statistical Inference of Transcriptomics data" held at the Politecnico di Torino (Department of Mathematical Sciences) in March-April 2026.
 
+Recordings of the course available here: https://www.youtube.com/@StatisticsDataScience-y8b
+
 Before the labs, install these packages:
 - CRAN: ggplot2, ggfortify, ggforce, gplots, corrplot, UpSetR, purrr, dplyr;
 - Bioconductor: edgeR, EnhancedVolcano, clusterProfiler, DOSE, BANDITS, DEXSeq, fgsea, msigdbr, BiocParallel, ExperimentHub, scater, celldex, SingleR, scran, muscat, distinct, speckle, DESpace, SpatialExperiment, spatialLIBD, scuttle, BayesSpace.
